@@ -6,14 +6,15 @@ import java.util.List;
 
 public class TutorRepository {
 
-    private List<Tutor> tutores = new ArrayList<>();
+    // armazenamento compartilhado entre instâncias
+    private static final List<Tutor> tutores = new ArrayList<>();
 
     public void salvar(Tutor tutor) {
         tutores.add(tutor);
     }
 
     public List<Tutor> listar() {
-        return tutores;
+        return new ArrayList<>(tutores);
     }
 
     public Tutor buscarPorId(int id) {

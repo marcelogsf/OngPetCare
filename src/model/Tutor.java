@@ -42,4 +42,23 @@ public class Tutor {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n----- TUTOR -----\n");
+        sb.append("ID: ").append(id).append("\n");
+        sb.append("Nome: ").append(nome != null ? nome : "-").append("\n");
+        sb.append("CPF: ").append(cpf != null ? cpf : "-").append("\n");
+        sb.append("Idade: ").append(idade).append("\n");
+        sb.append("Email: ").append(email != null ? email : "-").append("\n");
+        sb.append("Telefone: ").append(telefone != null ? telefone : "-").append("\n");
+        sb.append("Endereço: ").append(endereco != null ? endereco : "-").append("\n");
+        sb.append("Restrição de Adoção: ").append(restricaoAdocao ? "Sim" : "Não").append("\n");
+        if (restricaoAdocao) {
+            sb.append("Tipo de Restrição: ").append(tipoRestricao != null ? tipoRestricao : "-").append("\n");
+        }
+        sb.append("------------------\n");
+        return sb.toString();
+    }
+
 }

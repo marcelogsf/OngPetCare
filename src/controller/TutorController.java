@@ -13,105 +13,139 @@ public class TutorController {
 
     public void menu() {
         int opcao;
-
         do {
-            System.out.println("\n=== MENU TUTOR ===");
-            System.out.println("1 - Cadastrar Tutor");
-            System.out.println("2 - Listar Tutores");
-            System.out.println("3 - Atualizar Tutor");
-            System.out.println("4 - Remover Tutor");
+            System.out.println("\n=== MENU TUTORES ===");
+            System.out.println("1 - Cadastrar tutor");
+            System.out.println("2 - Listar tutores");
+            System.out.println("3 - Buscar tutor por ID");
+            System.out.println("4 - Atualizar tutor");
+            System.out.println("5 - Remover tutor");
             System.out.println("0 - Voltar");
             System.out.print("Escolha: ");
-            opcao = scanner.nextInt();
-            scanner.nextLine();
+            String line = scanner.nextLine();
+            if (line.isEmpty()) { opcao = -1; }
+            else { opcao = Integer.parseInt(line); }
 
             switch (opcao) {
                 case 1 -> cadastrar();
                 case 2 -> listar();
-                case 3 -> atualizar();
-                case 4 -> remover();
+                case 3 -> buscarPorId();
+                case 4 -> atualizar();
+                case 5 -> remover();
                 case 0 -> System.out.println("Voltando...");
-                default -> System.out.println("Opção inválida!");
+                default -> System.out.println("Opção inválida.");
             }
-
         } while (opcao != 0);
     }
 
     private void cadastrar() {
-        Tutor tutor = new Tutor();
-
+        Tutor t = new Tutor();
         System.out.print("ID: ");
-        tutor.setId(scanner.nextInt());
-        scanner.nextLine();
-
+        t.setId(Integer.parseInt(scanner.nextLine()));
         System.out.print("Nome: ");
-        tutor.setNome(scanner.nextLine());
-
+        t.setNome(scanner.nextLine());
+        System.out.print("CPF: ");
+        t.setCpf(scanner.nextLine());
         System.out.print("Idade: ");
-        tutor.setIdade(scanner.nextInt());
-        scanner.nextLine();
-
-        System.out.print("Telefone: ");
-        tutor.setTelefone(scanner.nextLine());
-
+        t.setIdade(Integer.parseInt(scanner.nextLine()));
         System.out.print("Email: ");
-        tutor.setEmail(scanner.nextLine());
+        t.setEmail(scanner.nextLine());
+        System.out.print("Telefone: ");
+        t.setTelefone(scanner.nextLine());
+        System.out.print("Endereço: ");
+        t.setEndereco(scanner.nextLine());
 
-        service.cadastrar(tutor);
-        System.out.println("Tutor cadastrado com sucesso!");
+        System.out.print("Possui restrição para adoção? (s/n): ");
+        String resp = scanner.nextLine().trim().toLowerCase();
+        if (resp.equals("s") || resp.equals("sim")) {
+            t.setRestricaoAdocao(true);
+            System.out.print("Descreva o tipo de restrição: ");
+            t.setTipoRestricao(scanner.nextLine());
+        } else {
+            t.setRestricaoAdocao(false);
+            t.setTipoRestricao("");
+        }
+
+        service.cadastrar(t);
+        System.out.println("Tutor cadastrado com sucesso.");
     }
 
     private void listar() {
         List<Tutor> tutores = service.listar();
+
         if (tutores.isEmpty()) {
             System.out.println("Nenhum tutor cadastrado.");
             return;
         }
 
-        System.out.println("\n=== LISTA DE TUTORES ===");
+        System.out.println("\n=== LISTA DE TUTORES ===\n");
+
         for (Tutor t : tutores) {
-            System.out.println("ID: " + t.getId() +
-                    " | Nome: " + t.getNome() +
-                    " | Idade: " + t.getIdade() +
-                    " | Telefone: " + t.getTelefone() +
-                    " | Email: " + t.getEmail());
+            System.out.println(t);  // usa toString formatado
+            System.out.println();   // linha extra para separar
         }
+    }
+
+
+    private void buscarPorId() {
+        System.out.print("ID do tutor: ");
+        int id = Integer.parseInt(scanner.nextLine());
+        Tutor t = service.buscarPorId(id);
+        if (t == null) System.out.println("Tutor não encontrado.");
+        else System.out.println(t);
     }
 
     private void atualizar() {
         System.out.print("ID do tutor para atualizar: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-
-        Tutor tutor = service.buscarPorId(id);
-
-        if (tutor == null) {
-            System.out.println("Tutor não encontrado!");
+        int id = Integer.parseInt(scanner.nextLine());
+        Tutor t = service.buscarPorId(id);
+        if (t == null) {
+            System.out.println("Tutor não encontrado.");
             return;
         }
 
-        System.out.print("Novo nome: ");
-        tutor.setNome(scanner.nextLine());
+        System.out.print("Novo nome (enter para manter): ");
+        String nome = scanner.nextLine();
+        if (!nome.isBlank()) t.setNome(nome);
 
-        System.out.print("Nova idade: ");
-        tutor.setIdade(scanner.nextInt());
-        scanner.nextLine();
+        System.out.print("Novo CPF (enter para manter): ");
+        String cpf = scanner.nextLine();
+        if (!cpf.isBlank()) t.setCpf(cpf);
 
-        System.out.print("Novo telefone: ");
-        tutor.setTelefone(scanner.nextLine());
+        System.out.print("Nova idade (enter para manter): ");
+        String idade = scanner.nextLine();
+        if (!idade.isBlank()) t.setIdade(Integer.parseInt(idade));
 
-        System.out.print("Novo email: ");
-        tutor.setEmail(scanner.nextLine());
+        System.out.print("Novo email (enter para manter): ");
+        String email = scanner.nextLine();
+        if (!email.isBlank()) t.setEmail(email);
 
-        service.atualizar(tutor);
+        System.out.print("Novo telefone (enter para manter): ");
+        String tel = scanner.nextLine();
+        if (!tel.isBlank()) t.setTelefone(tel);
+
+        System.out.print("Novo endereço (enter para manter): ");
+        String end = scanner.nextLine();
+        if (!end.isBlank()) t.setEndereco(end);
+
+        System.out.print("Possui restrição para adoção? (s/n, enter para manter): ");
+        String resp = scanner.nextLine().trim().toLowerCase();
+        if (resp.equals("s") || resp.equals("sim")) {
+            t.setRestricaoAdocao(true);
+            System.out.print("Descreva o tipo de restrição: ");
+            t.setTipoRestricao(scanner.nextLine());
+        } else if (resp.equals("n") || resp.equals("nao") || resp.equals("não")) {
+            t.setRestricaoAdocao(false);
+            t.setTipoRestricao("");
+        }
+
+        service.atualizar(t);
         System.out.println("Tutor atualizado!");
     }
 
     private void remover() {
         System.out.print("ID do tutor para remover: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-
+        int id = Integer.parseInt(scanner.nextLine());
         if (service.remover(id)) {
             System.out.println("Tutor removido com sucesso!");
         } else {

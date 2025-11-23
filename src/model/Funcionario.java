@@ -25,5 +25,18 @@ public class Funcionario {
 
     public FuncaoFuncionario getFuncao() { return funcao; }
     public void setFuncao(FuncaoFuncionario funcao) { this.funcao = funcao; }
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n--- FUNCIONÁRIO ---\n");
+        sb.append("ID: ").append(id).append("\n");
+        sb.append("Nome: ").append(nome != null ? nome : "-").append("\n");
+        sb.append("CPF: ").append(cpf != null ? cpf : "-").append("\n");
+        sb.append("Idade: ").append(idade).append("\n");
+        sb.append("Função: ").append(funcao != null ? funcao : "-").append("\n");
+        sb.append("-------------------\n");
+        return sb.toString();
+    }
+
 }
 

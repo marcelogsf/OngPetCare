@@ -61,19 +61,20 @@ public class FuncionarioController {
 
     private void listar() {
         List<Funcionario> funcionarios = service.listar();
+
         if (funcionarios.isEmpty()) {
             System.out.println("Nenhum funcionário cadastrado.");
             return;
         }
 
-        System.out.println("\n=== LISTA DE FUNCIONÁRIOS ===");
+        System.out.println("\n=== LISTA DE FUNCIONÁRIOS ===\n");
+
         for (Funcionario f : funcionarios) {
-            System.out.println("ID: " + f.getId() +
-                    " | Nome: " + f.getNome() +
-                    " | Idade: " + f.getIdade() +
-                    " | Função: " + f.getFuncao());
+            System.out.println(f);  // usa toString bonito
+            System.out.println();   // separação visual
         }
     }
+
 
     private void atualizar() {
         System.out.print("ID do funcionário para atualizar: ");
