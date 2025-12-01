@@ -7,14 +7,6 @@ import enums.StatusAdocao;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Classe Pet atualizada para o Sprint 2:
- * - Histórico: consultas, vacinas, castrações
- * - Métodos registrarConsulta/registrarVacina/registrarCastracao
- * - mostrarHistorico()
- * - campo tutor (para adoção) com getter/setter
- * - statusAdocao inicializado como DISPONIVEL
- */
 public class Pet {
 
     private int id;
@@ -26,15 +18,20 @@ public class Pet {
     private StatusSaude statusSaude;
     private StatusAdocao statusAdocao = StatusAdocao.DISPONIVEL;
 
-    // novo campo: Tutor do pet (poderá ser null enquanto não adotado)
+    // Tutor do pet — pode ser null até a adoção
     private Tutor tutor;
 
-    // Histórico do pet
+    // Histórico (Sprint 2)
     private List<Consulta> consultas = new ArrayList<>();
     private List<Vacina> vacinas = new ArrayList<>();
     private List<Castracao> castracoes = new ArrayList<>();
 
-    // Getters e Setters existentes
+    // Campos Sprint 3
+    private String energia;     // BAIXA / MEDIA / ALTA
+    private int idadeIdeal;     // idade ideal do adotante
+
+    // ------------------ GETTERS E SETTERS ------------------
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -59,21 +56,28 @@ public class Pet {
     public StatusAdocao getStatusAdocao() { return statusAdocao; }
     public void setStatusAdocao(StatusAdocao statusAdocao) { this.statusAdocao = statusAdocao; }
 
-    // Tutor getter/setter (novo)
     public Tutor getTutor() { return tutor; }
     public void setTutor(Tutor tutor) { this.tutor = tutor; }
 
-    // ---------- Métodos do histórico ----------
+    // Sprint 3 getters/setters
+    public String getEnergia() { return energia; }
+    public void setEnergia(String energia) { this.energia = energia; }
+
+    public int getIdadeIdeal() { return idadeIdeal; }
+    public void setIdadeIdeal(int idadeIdeal) { this.idadeIdeal = idadeIdeal; }
+
+    // ------------------ HISTÓRICO (Sprint 2) ------------------
+
     public void registrarConsulta(Consulta c) {
-        if (c != null) this.consultas.add(c);
+        if (c != null) consultas.add(c);
     }
 
     public void registrarVacina(Vacina v) {
-        if (v != null) this.vacinas.add(v);
+        if (v != null) vacinas.add(v);
     }
 
     public void registrarCastracao(Castracao c) {
-        if (c != null) this.castracoes.add(c);
+        if (c != null) castracoes.add(c);
     }
 
     public List<Consulta> getConsultas() {
@@ -88,47 +92,45 @@ public class Pet {
         return castracoes;
     }
 
-    /**
-     * Mostra no console o histórico do pet (consultas, vacinas e castrações).
-     * Use este método no menu de benefícios quando o usuário escolher "Ver Histórico".
-     */
+    // ------------------ EXIBIR HISTÓRICO ------------------
+
     public void mostrarHistorico() {
         System.out.println("\n=== HISTÓRICO DO PET: " + (nome != null ? nome : "SEM NOME") + " ===\n");
 
         // Consultas
         System.out.println("-- CONSULTAS --");
-        if (consultas == null || consultas.isEmpty()) {
+        if (consultas.isEmpty()) {
             System.out.println("Nenhuma consulta registrada.\n");
         } else {
             for (Consulta c : consultas) {
-                System.out.println("Data: " + (c.getData() != null ? c.getData() : "-"));
-                System.out.println("Descrição: " + (c.getDescricao() != null ? c.getDescricao() : "-"));
-                System.out.println("Veterinário: " + (c.getVeterinario() != null ? c.getVeterinario() : "-"));
+                System.out.println("Data: " + c.getData());
+                System.out.println("Descrição: " + c.getDescricao());
+                System.out.println("Veterinário: " + c.getVeterinario());
                 System.out.println("--------------------------");
             }
         }
 
         // Vacinas
         System.out.println("\n-- VACINAS --");
-        if (vacinas == null || vacinas.isEmpty()) {
+        if (vacinas.isEmpty()) {
             System.out.println("Nenhuma vacina registrada.\n");
         } else {
             for (Vacina v : vacinas) {
-                System.out.println("Tipo: " + (v.getTipo() != null ? v.getTipo() : "-"));
-                System.out.println("Data: " + (v.getData() != null ? v.getData() : "-"));
+                System.out.println("Tipo: " + v.getTipo());
+                System.out.println("Data: " + v.getData());
                 System.out.println("--------------------------");
             }
         }
 
         // Castrações
         System.out.println("\n-- CASTRAÇÕES --");
-        if (castracoes == null || castracoes.isEmpty()) {
+        if (castracoes.isEmpty()) {
             System.out.println("Nenhuma castração registrada.\n");
         } else {
             for (Castracao ca : castracoes) {
-                System.out.println("Data: " + (ca.getData() != null ? ca.getData() : "-"));
-                System.out.println("Veterinário: " + (ca.getVeterinario() != null ? ca.getVeterinario() : "-"));
-                System.out.println("Observações: " + (ca.getObservacoes() != null ? ca.getObservacoes() : "-"));
+                System.out.println("Data: " + ca.getData());
+                System.out.println("Veterinário: " + ca.getVeterinario());
+                System.out.println("Observações: " + ca.getObservacoes());
                 System.out.println("--------------------------");
             }
         }
@@ -136,6 +138,7 @@ public class Pet {
         System.out.println("==============================\n");
     }
 
+    // ------------------ TO STRING ------------------
 
     @Override
     public String toString() {
@@ -148,6 +151,8 @@ public class Pet {
                 "\nRaça: " + raca +
                 "\nCor: " + cor +
                 "\nTamanho: " + tamanho +
+                "\nEnergia: " + energia +
+                "\nIdade Ideal do Adotante: " + idadeIdeal +
                 "\nStatus de Saúde: " + statusSaude +
                 "\nStatus de Adoção: " + statusAdocao +
                 "\nTutor: " + tutorNome +

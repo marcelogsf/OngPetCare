@@ -19,6 +19,7 @@ public class PetController {
 
     public void menu() {
         int opcao;
+
         do {
             System.out.println("\n=== MENU PETS ===");
             System.out.println("1 - Cadastrar pet");
@@ -26,16 +27,26 @@ public class PetController {
             System.out.println("3 - Buscar pet por ID");
             System.out.println("4 - Atualizar pet");
             System.out.println("5 - Remover pet");
-            System.out.println("6 - Registrar Consulta (benefício)");
-            System.out.println("7 - Registrar Vacina (benefício)");
-            System.out.println("8 - Registrar Castração (benefício)");
-            System.out.println("9 - Ver Histórico do Pet (benefício)");
+
+            System.out.println("\n=== BENEFÍCIOS ===");
+            System.out.println("6 - Registrar Consulta");
+            System.out.println("7 - Registrar Vacina");
+            System.out.println("8 - Registrar Castração");
+            System.out.println("9 - Ver Histórico do Pet");
+
+            System.out.println("\n=== ADOÇÃO ===");
             System.out.println("10 - Adotar Pet");
+
+            System.out.println("\n=== FILTROS ===");
+            System.out.println("11 - Filtrar por Energia");
+            System.out.println("12 - Filtrar por Idade Ideal do Adotante");
+            System.out.println("13 - Filtrar por Tamanho");
+
             System.out.println("0 - Voltar");
             System.out.print("Escolha: ");
+
             String line = scanner.nextLine();
-            if (line.isEmpty()) { opcao = -1; }
-            else { opcao = Integer.parseInt(line); }
+            opcao = line.isEmpty() ? -1 : Integer.parseInt(line);
 
             switch (opcao) {
                 case 1 -> cadastrar();
@@ -48,30 +59,41 @@ public class PetController {
                 case 8 -> registrarCastracaoMenu();
                 case 9 -> verHistoricoMenu();
                 case 10 -> adotarPetMenu();
+                case 11 -> filtrarPorEnergiaMenu();
+                case 12 -> filtrarPorIdadeIdealMenu();
+                case 13 -> filtrarPorTamanhoMenu();
                 case 0 -> System.out.println("Voltando...");
                 default -> System.out.println("Opção inválida.");
             }
+
         } while (opcao != 0);
     }
 
+    // ============================================================
+    // ====================== CADASTRAR ============================
+    // ============================================================
     private void cadastrar() {
         Pet pet = new Pet();
+
         System.out.print("ID: ");
         pet.setId(Integer.parseInt(scanner.nextLine()));
+
         System.out.print("Nome: ");
         pet.setNome(scanner.nextLine());
+
         System.out.print("Idade: ");
         pet.setIdade(Integer.parseInt(scanner.nextLine()));
+
         System.out.print("Raça: ");
         pet.setRaca(scanner.nextLine());
+
         System.out.print("Cor: ");
         pet.setCor(scanner.nextLine());
 
         // Tamanho
         System.out.print("Tamanho (PEQUENO, MEDIO, GRANDE): ");
-        String tam = scanner.nextLine().trim().toUpperCase();
         try {
-            pet.setTamanho(Tamanho.valueOf(tam));
+            pet.setTamanho(Tamanho.valueOf(scanner.nextLine().trim().toUpperCase()));
         } catch (Exception e) {
             System.out.println("Tamanho inválido. Usando MEDIO por padrão.");
             pet.setTamanho(Tamanho.MEDIO);
@@ -79,18 +101,26 @@ public class PetController {
 
         // Status de saúde
         System.out.print("Status de saúde (SAUDAVEL, DOENTE, EM_TRATAMENTO): ");
-        String st = scanner.nextLine().trim().toUpperCase();
         try {
-            pet.setStatusSaude(StatusSaude.valueOf(st));
+            pet.setStatusSaude(StatusSaude.valueOf(scanner.nextLine().trim().toUpperCase()));
         } catch (Exception e) {
             System.out.println("Status inválido. Usando SAUDAVEL por padrão.");
             pet.setStatusSaude(StatusSaude.SAUDAVEL);
         }
 
+        // Energia
+        System.out.print("Energia (BAIXA, MEDIA, ALTA): ");
+        pet.setEnergia(scanner.nextLine().trim().toUpperCase());
+
+        // Idade Ideal
+        System.out.print("Idade ideal do adotante: ");
+        pet.setIdadeIdeal(Integer.parseInt(scanner.nextLine()));
+
         service.cadastrar(pet);
-        System.out.println("Pet cadastrado.");
+        System.out.println("Pet cadastrado!");
     }
 
+    // ============================================================
     private void listar() {
         List<Pet> pets = service.listar();
 
@@ -99,154 +129,179 @@ public class PetController {
             return;
         }
 
-        System.out.println("\n=== LISTA DE PETS ===\n");
-
+        System.out.println("\n=== LISTA DE PETS ===");
         for (Pet p : pets) {
-            System.out.println(p);  // usa o toString formatado
-            System.out.println();   // linha em branco entre pets
+            System.out.println(p);
         }
     }
 
-
     private void buscarPorId() {
         System.out.print("ID do pet: ");
-        int id = Integer.parseInt(scanner.nextLine());
-        Pet p = service.buscarPorId(id);
+        Pet p = service.buscarPorId(Integer.parseInt(scanner.nextLine()));
+
         if (p == null) System.out.println("Pet não encontrado.");
         else System.out.println(p);
     }
 
+    // ============================================================
     private void atualizar() {
         System.out.print("ID do pet para atualizar: ");
-        int id = Integer.parseInt(scanner.nextLine());
-        Pet p = service.buscarPorId(id);
+        Pet p = service.buscarPorId(Integer.parseInt(scanner.nextLine()));
+
         if (p == null) {
             System.out.println("Pet não encontrado.");
             return;
         }
-        System.out.print("Novo nome (enter para manter): ");
+
+        System.out.print("Novo nome (enter = mantém): ");
         String nome = scanner.nextLine();
         if (!nome.isBlank()) p.setNome(nome);
-        System.out.print("Nova idade (enter para manter): ");
-        String idStr = scanner.nextLine();
-        if (!idStr.isBlank()) p.setIdade(Integer.parseInt(idStr));
 
-        System.out.print("Novo tamanho (PEQUENO, MEDIO, GRANDE) (enter para manter): ");
-        String tam = scanner.nextLine().trim().toUpperCase();
+        System.out.print("Nova idade (enter = mantém): ");
+        String idade = scanner.nextLine();
+        if (!idade.isBlank()) p.setIdade(Integer.parseInt(idade));
+
+        System.out.print("Novo tamanho (enter = mantém): ");
+        String tam = scanner.nextLine().toUpperCase();
         if (!tam.isBlank()) {
             try { p.setTamanho(Tamanho.valueOf(tam)); }
-            catch (Exception e) { System.out.println("Tamanho inválido, mantendo o anterior."); }
+            catch (Exception ignored) {}
         }
 
-        System.out.print("Novo status de saúde (SAUDAVEL, DOENTE, EM_TRATAMENTO) (enter para manter): ");
-        String st = scanner.nextLine().trim().toUpperCase();
+        System.out.print("Novo status de saúde (enter = mantém): ");
+        String st = scanner.nextLine().toUpperCase();
         if (!st.isBlank()) {
             try { p.setStatusSaude(StatusSaude.valueOf(st)); }
-            catch (Exception e) { System.out.println("Status inválido, mantendo o anterior."); }
+            catch (Exception ignored) {}
         }
+
+        System.out.print("Nova energia (enter = mantém): ");
+        String energia = scanner.nextLine().toUpperCase();
+        if (!energia.isBlank()) p.setEnergia(energia);
+
+        System.out.print("Nova idade ideal do adotante (enter = mantém): ");
+        String idadeIdeal = scanner.nextLine();
+        if (!idadeIdeal.isBlank()) p.setIdadeIdeal(Integer.parseInt(idadeIdeal));
 
         service.atualizar(p);
         System.out.println("Pet atualizado!");
     }
 
+    // ============================================================
     private void remover() {
         System.out.print("ID do pet para remover: ");
         int id = Integer.parseInt(scanner.nextLine());
-        if (service.remover(id)) {
-            System.out.println("Pet removido com sucesso!");
-        } else {
-            System.out.println("Pet não encontrado!");
-        }
+
+        if (service.remover(id)) System.out.println("Pet removido.");
+        else System.out.println("Pet não encontrado.");
     }
 
-    // ---------- Menus/ações de Benefícios ----------
+    // ============================================================
+    // ================= BENEFÍCIOS ===============================
+    // ============================================================
 
     private void registrarConsultaMenu() {
-        System.out.print("ID do pet para registrar consulta: ");
+        System.out.print("ID do pet: ");
         int id = Integer.parseInt(scanner.nextLine());
-        Pet pet = service.buscarPorId(id);
-        if (pet == null) {
-            System.out.println("Pet não encontrado.");
-            return;
-        }
-        System.out.print("Data (ex: 2025-11-22): ");
+
+        System.out.print("Data: ");
         String data = scanner.nextLine();
         System.out.print("Descrição: ");
-        String descricao = scanner.nextLine();
+        String desc = scanner.nextLine();
         System.out.print("Veterinário: ");
         String vet = scanner.nextLine();
 
-        Consulta c = new Consulta(data, descricao, vet);
-        String res = service.registrarConsulta(id, c);
-        System.out.println(res);
+        Consulta c = new Consulta(data, desc, vet);
+        System.out.println(service.registrarConsulta(id, c));
     }
 
     private void registrarVacinaMenu() {
-        System.out.print("ID do pet para registrar vacina: ");
+        System.out.print("ID do pet: ");
         int id = Integer.parseInt(scanner.nextLine());
-        Pet pet = service.buscarPorId(id);
-        if (pet == null) {
-            System.out.println("Pet não encontrado.");
-            return;
-        }
 
         System.out.print("Tipo (RAIVA, MULTIPLA, GRIPE, OUTRA): ");
-        String tipoS = scanner.nextLine().trim().toUpperCase();
         TipoVacina tipo;
-        try {
-            tipo = TipoVacina.valueOf(tipoS);
-        } catch (Exception e) {
+        try { tipo = TipoVacina.valueOf(scanner.nextLine().toUpperCase()); }
+        catch (Exception e) {
             System.out.println("Tipo inválido.");
             return;
         }
 
-        System.out.print("Data (ex: 2025-11-22): ");
+        System.out.print("Data: ");
         String data = scanner.nextLine();
 
         Vacina v = new Vacina(tipo, data);
-        String res = service.registrarVacina(id, v);
-        System.out.println(res);
+        System.out.println(service.registrarVacina(id, v));
     }
 
     private void registrarCastracaoMenu() {
-        System.out.print("ID do pet para registrar castração: ");
+        System.out.print("ID do pet: ");
         int id = Integer.parseInt(scanner.nextLine());
-        Pet pet = service.buscarPorId(id);
-        if (pet == null) {
-            System.out.println("Pet não encontrado.");
-            return;
-        }
 
-        System.out.print("Data (ex: 2025-11-22): ");
+        System.out.print("Data: ");
         String data = scanner.nextLine();
         System.out.print("Veterinário: ");
         String vet = scanner.nextLine();
-        System.out.print("Observações (opcional): ");
+        System.out.print("Observações: ");
         String obs = scanner.nextLine();
 
         Castracao c = new Castracao(data, vet, obs);
-        String res = service.registrarCastracao(id, c);
-        System.out.println(res);
+        System.out.println(service.registrarCastracao(id, c));
     }
 
     private void verHistoricoMenu() {
-        System.out.print("ID do pet para ver histórico: ");
-        int id = Integer.parseInt(scanner.nextLine());
-        Pet pet = service.buscarPorId(id);
+        System.out.print("ID do pet: ");
+        Pet pet = service.buscarPorId(Integer.parseInt(scanner.nextLine()));
+
         if (pet == null) {
             System.out.println("Pet não encontrado.");
             return;
         }
+
         pet.mostrarHistorico();
     }
 
     private void adotarPetMenu() {
-        System.out.print("ID do pet a ser adotado: ");
+        System.out.print("ID do pet: ");
         int petId = Integer.parseInt(scanner.nextLine());
-        System.out.print("ID do tutor que vai adotar: ");
+
+        System.out.print("ID do tutor: ");
         int tutorId = Integer.parseInt(scanner.nextLine());
 
-        String res = service.adotarPet(petId, tutorId);
-        System.out.println(res);
+        System.out.println(service.adotarPet(petId, tutorId));
+    }
+
+    // ============================================================
+    // ================= FILTROS =================================
+    // ============================================================
+
+    private void filtrarPorEnergiaMenu() {
+        System.out.print("Energia (BAIXA, MEDIA, ALTA): ");
+        String energia = scanner.nextLine().toUpperCase();
+
+        List<Pet> pets = service.filtrarPorEnergia(energia);
+
+        System.out.println("\n=== RESULTADOS ===");
+        pets.forEach(System.out::println);
+    }
+
+    private void filtrarPorIdadeIdealMenu() {
+        System.out.print("Idade do adotante: ");
+        int idade = Integer.parseInt(scanner.nextLine());
+
+        List<Pet> pets = service.filtrarPorIdadeIdeal(idade);
+
+        System.out.println("\n=== RESULTADOS ===");
+        pets.forEach(System.out::println);
+    }
+
+    private void filtrarPorTamanhoMenu() {
+        System.out.print("Tamanho (PEQUENO, MEDIO, GRANDE): ");
+        String tam = scanner.nextLine().toUpperCase();
+
+        List<Pet> pets = service.filtrarPorTamanho(tam);
+
+        System.out.println("\n=== RESULTADOS ===");
+        pets.forEach(System.out::println);
     }
 }

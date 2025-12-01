@@ -17,7 +17,10 @@ public class PetService {
     private PetRepository repository = new PetRepository();
     private TutorRepository tutorRepository = new TutorRepository();
 
-    // CRUD existentes
+    // ======================================================
+    // =============== CRUD BÁSICO (SPRINT 1) ===============
+    // ======================================================
+
     public void cadastrar(Pet pet) {
         repository.salvar(pet);
     }
@@ -38,33 +41,59 @@ public class PetService {
         return repository.remover(id);
     }
 
-    // ---------- Novos métodos do Sprint 2 ----------
+    // ======================================================
+    // =============== REGRAS DE ADOÇÃO (SPRINT 2 + 3) ======
+    // ======================================================
 
     public String adotarPet(int petId, int tutorId) {
+
         Pet pet = repository.buscarPorId(petId);
         if (pet == null) return "Pet não encontrado.";
 
         Tutor tutor = tutorRepository.buscarPorId(tutorId);
         if (tutor == null) return "Tutor não encontrado.";
 
-        // validações
+        // -------- REGRAS DA SPRINT 2 --------
+
         if (pet.getStatusSaude() == StatusSaude.DOENTE) {
             return "Pet não pode ser adotado: está doente.";
         }
+
         if (pet.getStatusAdocao() == StatusAdocao.ADOTADO) {
-            return "Pet já está adotado.";
-        }
-        if (tutor.isRestricaoAdocao()) {
-            return "Tutor possui restrição para adoção: " + tutor.getTipoRestricao();
+            return "Este pet já foi adotado.";
         }
 
-        // aplicar adoção
+        if (tutor.isRestricaoAdocao()) {
+            return "Tutor possui restrição: " + tutor.getTipoRestricao();
+        }
+
+        // -------- REGRAS DA SPRINT 3 --------
+
+        // 1. Idade do tutor deve ser >= idadeIdeal do pet
+        if (tutor.getIdade() < pet.getIdadeIdeal()) {
+            return "Adoção negada: tutor não atende à idade recomendada para este pet.";
+        }
+
+        // 2. Tutor idoso não pode adotar pets com energia ALTA
+        if (tutor.getIdade() >= 60 &&
+                pet.getEnergia() != null &&
+                pet.getEnergia().equalsIgnoreCase("ALTA")) {
+
+            return "Adoção negada: pets de ALTA energia não são recomendados para tutores idosos.";
+        }
+
+        // -------- FINALIZA A ADOÇÃO --------
+
         pet.setTutor(tutor);
         pet.setStatusAdocao(StatusAdocao.ADOTADO);
         repository.atualizar(pet);
 
-        return "Sucesso: pet " + pet.getNome() + " adotado por " + tutor.getNome();
+        return "Sucesso: o pet " + pet.getNome() + " agora pertence a " + tutor.getNome();
     }
+
+    // ======================================================
+    // ======== HISTÓRICO DE CONSULTAS / VACINAS (S2) =======
+    // ======================================================
 
     public String registrarConsulta(int petId, Consulta consulta) {
         Pet pet = repository.buscarPorId(petId);
@@ -94,5 +123,29 @@ public class PetService {
         pet.registrarCastracao(castracao);
         repository.atualizar(pet);
         return "Castração registrada com sucesso.";
+    }
+
+    // ======================================================
+    // ================= FILTROS (SPRINT 3) =================
+    // ======================================================
+
+    public List<Pet> filtrarPorEnergia(String energia) {
+        return repository.listar().stream()
+                .filter(p -> p.getEnergia() != null &&
+                        p.getEnergia().equalsIgnoreCase(energia))
+                .toList();
+    }
+
+    public List<Pet> filtrarPorIdadeIdeal(int idadeAdotante) {
+        return repository.listar().stream()
+                .filter(p -> p.getIdadeIdeal() <= idadeAdotante)
+                .toList();
+    }
+
+    public List<Pet> filtrarPorTamanho(String tamanho) {
+        return repository.listar().stream()
+                .filter(p -> p.getTamanho() != null &&
+                        p.getTamanho().name().equalsIgnoreCase(tamanho))
+                .toList();
     }
 }

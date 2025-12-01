@@ -1,5 +1,7 @@
 package model;
 
+import enums.Tamanho; // para porteDesejado
+
 public class Tutor {
 
     private int id;
@@ -10,11 +12,21 @@ public class Tutor {
     private boolean restricaoAdocao;
     private String tipoRestricao;
 
-    // Novos atributos que o controller precisa
+    // Atributos anteriores
     private int idade;
     private String email;
 
-    // Getters e Setters
+    // ===============================
+    // NOVOS ATRIBUTOS (SPRINT 3)
+    // ===============================
+    private String tipoResidencia;      // CASA, APARTAMENTO, CHACARA
+    private int tempoDisponivel;        // horas por dia
+    private Tamanho porteDesejado;      // PEQUENO, MEDIO, GRANDE
+
+    // ===============================
+    // GETTERS E SETTERS
+    // ===============================
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -36,12 +48,28 @@ public class Tutor {
     public String getTipoRestricao() { return tipoRestricao; }
     public void setTipoRestricao(String tipoRestricao) { this.tipoRestricao = tipoRestricao; }
 
-    // Getters e Setters dos novos atributos
     public int getIdade() { return idade; }
     public void setIdade(int idade) { this.idade = idade; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    // ===============================
+    // GETTERS/SETTERS SPRINT 3
+    // ===============================
+
+    public String getTipoResidencia() { return tipoResidencia; }
+    public void setTipoResidencia(String tipoResidencia) { this.tipoResidencia = tipoResidencia; }
+
+    public int getTempoDisponivel() { return tempoDisponivel; }
+    public void setTempoDisponivel(int tempoDisponivel) { this.tempoDisponivel = tempoDisponivel; }
+
+    public Tamanho getPorteDesejado() { return porteDesejado; }
+    public void setPorteDesejado(Tamanho porteDesejado) { this.porteDesejado = porteDesejado; }
+
+    // ===============================
+    // TO STRING
+    // ===============================
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -57,8 +85,12 @@ public class Tutor {
         if (restricaoAdocao) {
             sb.append("Tipo de Restrição: ").append(tipoRestricao != null ? tipoRestricao : "-").append("\n");
         }
+
+        sb.append("Tipo de Residência: ").append(tipoResidencia != null ? tipoResidencia : "-").append("\n");
+        sb.append("Tempo Disponível: ").append(tempoDisponivel).append("h/dia\n");
+        sb.append("Porte Desejado: ").append(porteDesejado != null ? porteDesejado : "-").append("\n");
+
         sb.append("------------------\n");
         return sb.toString();
     }
-
 }
